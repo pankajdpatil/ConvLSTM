@@ -2,7 +2,7 @@ import numpy as np
 
 class generate_sin_datas(object):
 
-    def __init__(self, batch_size=128, n_input=1000):
+    def __init__(self, batch_size=128, n_input=785):
         self.batch_size = batch_size
         self.n_input = n_input
 

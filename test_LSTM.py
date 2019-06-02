@@ -6,19 +6,23 @@ import tensorflow as tf
 from tensorflow.contrib import rnn
 from generate_lstm_data import generate_sin_datas
 import numpy as np
+from tensorflow.examples.tutorials.mnist import input_data
 
 # parameters
 learning_rate = 0.001
-training_iters = 100000
+training_iters = 5000
 batch_size = 128
 display_step = 10
 
 
 # network parameters
 n_input = 1
-n_steps = 999
+n_steps = 784
 n_classes = 1
 n_hidden = 128
+
+
+
 
 gen = generate_sin_datas()
 x, y = gen.next_batch()
@@ -72,9 +76,18 @@ with tf.Session() as sess:
     step = 1
     # Keep training until reach max iterations
     while step * batch_size < training_iters:
-        batch_x, batch_y = gen.__next__()
+        batch_x, batch_y = gen.next_batch()
+        
+        print("Shapes, batch x: {}".format(batch_x.shape))
+        print("Shapes, batch y: {}".format(batch_y.shape))
+        
         # Reshape data to get 28 seq of 28 elements
         batch_x = batch_x.reshape((batch_size, n_steps, n_input))
+        batch_y = batch_y.reshape((batch_size, n_input))
+        
+        print("After reshape Shapes, batch x: {}".format(batch_x.shape))
+        print("After reshape Shapes, batch y: {}".format(batch_y.shape))
+        
         # Run optimization op (backprop)
         sess.run(optimizer, feed_dict={x: batch_x, y: batch_y})
         if step % display_step == 0:
@@ -90,7 +103,10 @@ with tf.Session() as sess:
 
     # Calculate accuracy for 128 mnist test images
     test_len = 128
+    mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
     test_data = mnist.test.images[:test_len].reshape((-1, n_steps, n_input))
-    test_label = mnist.test.labels[:test_len]
+    test_label = mnist.test.labels[:test_len, 0:1].reshape((-1, n_input))
     print("Testing Accuracy:", \
         sess.run(accuracy, feed_dict={x: test_data, y: test_label}))
+
+    print("Ambika Hey I completed everything")
